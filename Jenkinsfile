@@ -1,11 +1,11 @@
 pipeline {
-    agent win
+    agent { label 'win' }  
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Cloning source code...'
-                git branch: 'main', url: 'https://github.com/hansikagollen/maven-jenkins.git'
+                echo 'Using Jenkins SCM checkout...'
+                bat 'dir' 
             }
         }
 
@@ -33,10 +33,19 @@ pipeline {
 
         stage('Archive Results') {
             steps {
-                echo 'Archiving build artifacts and test results...'
+                echo 'Archiving test results...'
                 archiveArtifacts artifacts: '**/report.xml', fingerprint: true, allowEmptyArchive: true
                 junit 'report.xml'
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully '
+        }
+        failure {
+            echo 'Pipeline failed '
         }
     }
 }
